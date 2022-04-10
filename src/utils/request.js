@@ -27,7 +27,6 @@ service.interceptors.request.use((req)=>{
 //响应拦截
 service.interceptors.response.use((res)=>{
     const { code, data, msg } = res.data;
-    debugger
     if (code === 200) {
         return data;
 } else if (code === 400001) {
