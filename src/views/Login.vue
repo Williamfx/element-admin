@@ -1,63 +1,60 @@
 <template>
   <div class="login-wrapper">
     <div class="modal">
-      <el-form>
+      <el-form ref="userForm" :model="user" status-icon :rules="rules">
         <div class="title">火星</div>
-        <el-form-item>
-          <el-input type="text" prefix-icon="el-icon-user" />
+        <el-form-item prop="userName">
+          <el-input type="text" prefix-icon="el-icon-user" v-model="user.userName" />
+        </el-form-item>
+        <el-form-item prop="userPwd">
+          <el-input type="password" prefix-icon="el-icon-view" v-model="user.userPwd"/>
         </el-form-item>
         <el-form-item>
-          <el-input type="password" prefix-icon="el-icon-view"/>
-        </el-form-item>
-        <el-form-item>
-          <el-button class="btn-login">登录</el-button>
+          <el-button class="btn-login" @click="login">登录</el-button>
         </el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 
-<!--
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-defineProps({
-  msg: String
-})
-
-const count = ref(0)
-const router = useRouter()
-const goHome = ()=> {
-    router.push('./welcome')
-}
-</script>
--->
-
 <script>
-import Welcome from './Welcome.vue'
 export default {
     name: 'login',
-    components: {Welcome},
-    mounted() {
-      /*
-      this.$request({
-        method: 'get',
-        url: '/login',
-        data: {
-          name: 'jack'
+    data() {
+      return {
+        user: {
+          userName: '',
+          userPwd: ''
+        },
+        rules: {
+          userName: [
+            {
+              required: true,message: "请输入用户名", trigger: "blur"
+            }
+          ],
+          userPwd: [
+            {
+              required: true,message: "请输入密码", trigger: "blur"
+            }
+          ],
         }
-      }).then((res) => {
-        console.log(res);
-      })
-      */
-     this.$request.get('/login',{name:'jack'},{mock:true,loading:true}).then((res)=>{
-       console.log(res)
-     })
+      }
     },
     methods: {
-        goHome() {
-            this.$router.push('./welcome')
-        }
+      login() {
+        this.$refs.userForm.validate((valid)=>{
+          if (valid) {
+            this.$api.login(this.user).then((res)=>{
+              
+            })
+          } else {
+            return false
+          }
+        })
+      },
+      goHome() {
+          this.$router.push('./welcome')
+      }
     }
 }
 </script>
