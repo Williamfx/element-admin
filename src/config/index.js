@@ -1,24 +1,25 @@
 /**
  * 环境配置封装
  */
-const env = import.meta.env.MODE || 'prod';
+const env =
+    import.meta.env.MODE || 'prod';
 const EnvConfig = {
-    dev:{
+    dev: {
         baseApi: '/',
-        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
+        mockApi: 'http://127.0.0.1:4523/mock/843894/'
     },
-    test:{
+    test: {
         baseApi: '/',
-        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
+        mockApi: 'http://127.0.0.1:4523/mock/843894/'
     },
     prod: {
         baseApi: '/',
-        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
+        mockApi: 'http://127.0.0.1:4523/mock/843894/'
     }
 }
 export default {
     env,
     mock: true,
-    namespace:'manager',
+    namespace: 'manager',
     ...EnvConfig[env]
 }
