@@ -5,21 +5,21 @@ const env =
     import.meta.env.MODE || 'prod';
 const EnvConfig = {
     dev: {
-        baseApi: '/',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/'
+        baseApi: '/api',
+        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
     },
     test: {
         baseApi: '/',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/'
+        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
     },
     prod: {
         baseApi: '/',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/'
+        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
     }
 }
 export default {
     env,
-    mock: true,
+    mock: false,
     namespace: 'manager',
     ...EnvConfig[env]
 }

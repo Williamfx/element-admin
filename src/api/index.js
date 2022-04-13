@@ -4,12 +4,12 @@
 
 import request from './../utils/request'
 export default {
-    login(params){
+    login(params) {
         return request({
             url: '/users/login',
             method: 'post',
-            data:params,
-            moc: true
+            data: params,
+            mock: true
         })
     }
 }
