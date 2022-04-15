@@ -1,36 +1,46 @@
 <template>
   <div class="basic-layout">
-    <div class="nav-side">
+    <div :class="['nav-side',isCollapse?'fold':'unfold']">
       <!-- 系统LOGO -->
-      <div class="log">
-        <span>Manager</span>
+      <div class="logo">
         <img src="./../assets/logo.png" alt="">
+        <span>Manager</span>
       </div>
       <!-- 导航菜单 -->
       <el-menu
         default-active="2"
-        @open="handleOpen"
-        @close="handleClose"
         background-color="#001529"
         text-color="#fff"
+        router
+        :collapse="isCollapse"
+        class="nav-menu"
       >
-        <el-sub-menu index="1">
-          <template #title><i class="iconfont">&#xe600;</i><span>系统管理</span></template>
-          <el-menu-item index="1-1"><i class="iconfont">&#xe6b4;</i>用户管理</el-menu-item>
-          <el-menu-item index="1-2"><i class="iconfont">&#xe610;</i>菜单管理</el-menu-item>
-        </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title><i class="iconfont">&#xe600;</i><span>审批管理</span></template>
-          <el-menu-item index="2-1"><i class="iconfont">&#xe608;</i>休假申请</el-menu-item>
-          <el-menu-item index="2-2"><i class="iconfont">&#xe760;</i>待我审批</el-menu-item>
-        </el-sub-menu>
+      <tree-menu :userMenu="userMenu"></tree-menu>
       </el-menu>
-    
     </div>
-    <div class="content-right">
+    <div :class="['content-right',isCollapse?'fold':'unfold']">
       <div class="nat-top">
-        <div class="bread">面包屑</div>
-        <div class="user-">用户</div>
+        <div class="nav-left">
+          <div class="menu-fold" @click="toggle"><i class="iconfont">&#xe669;</i></div>    
+          <div class="bread">面包屑</div>
+        </div>
+        <div class="user-info">
+          <el-badge :is-dot="noticeCount" class="notice">
+              <i class="iconfont">&#xe60d;</i>
+          </el-badge>
+          <el-dropdown @command="handleLogout">
+            <el-button class="userlink">
+              {{userInfo.userName}}
+              <el-icon class="el-icon--right"></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="email">邮箱：{{userInfo.userEmail}}</el-dropdown-item>
+                <el-dropdown-item command="logout">退出</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
       </div>
       <div class="wrapper">
         <div class="main-page">
@@ -42,22 +52,60 @@
 </template>
 
 
-<script setup>
-import { ref } from 'vue'
-
-defineProps({
-  msg: String
-})
-
-const count = ref(0)
+<script>
+import TreeMenu from './TreeMenu.vue'
+export default {
+  name:'Home',
+  components: {TreeMenu},
+  data() {
+    return {
+      isCollapse: false,
+      userInfo: this.$store.state.userInfo,
+      noticeCount: 0,
+      userMenu: []
+    }
+  },
+  mounted() {
+    this.getNoticeCount();
+    this.getMenuList();
+  },
+  methods: {
+    toggle(){
+      this.isCollapse = !this.isCollapse;
+    },
+    handleLogout(key) {
+      if(key == 'email') return;
+      this.$store.commit('saveUserInfo','');
+      this.userInfo = null;
+      this.$router.push('/login');
+    },
+    async getNoticeCount() {
+      try {
+        const count = await this.$api.noticeCount()
+        this.noticeCount = count;
+      }catch(error){
+        console.error(error)
+      }
+    },
+    async getMenuList() {
+      try {
+        const list = await this.$api.getMenuList()
+        this.userMenu = list;
+        console.log(list)
+      }catch(error){
+        console.error(error)
+      }
+    }
+  }
+}
 </script>
 
 <style lang="scss">
 @font-face {
   font-family: 'iconfont';  /* Project id 3330445 */
-  src: url('//at.alicdn.com/t/font_3330445_y82vvxpl5sm.woff2?t=1649987869365') format('woff2'),
-       url('//at.alicdn.com/t/font_3330445_y82vvxpl5sm.woff?t=1649987869365') format('woff'),
-       url('//at.alicdn.com/t/font_3330445_y82vvxpl5sm.ttf?t=1649987869365') format('truetype');
+  src: url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.woff2?t=1650003668721') format('woff2'),
+       url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.woff?t=1650003668721') format('woff'),
+       url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.ttf?t=1650003668721') format('truetype');
 }
 .iconfont{
     font-family:"iconfont" !important;
@@ -87,21 +135,39 @@ const count = ref(0)
     height: 100vh;
     background-color: #001529;
     color: #fff;
-    overflow-y: auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
     transition: width .5s;
-    .log {
-      span {
-        font-size: 26px;
-        position: relative;
-        bottom: 10px;
-      }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      height: 50px;
       img {
-        width: 50px;
+        width: 32px;
+        height: 32px;
+        margin: 0 16px;
       }
+    }
+    .nav-menu {
+      height: calc(100vh - 50px);
+      border-right: none;
+    }
+    &.fold {
+      width: 64px;
+    }
+    &.unfold {
+      width: 200px;
     }
   }
   .content-right {
     margin-left: 200px;
+    &.fold {
+      margin-left: 64px;
+    }
+    &.unfold {
+      margin-left: 200px;
+    }
     .nat-top {
       height: 50px;
       line-height: 50px;
@@ -109,6 +175,25 @@ const count = ref(0)
       justify-content: space-between;
       border-bottom: 1px solid #ddd;
       padding: 0 20px;
+      .nav-left {
+        display: flex;
+        align-items: center;
+        .menu-lfet {
+          margin-right: 15px;
+        }
+        // justify-content: ;
+      }
+      .user-info {
+        .notice {
+          line-height: 30px;
+          margin-right: 15px;
+        }
+        .userlink {
+          cursor: pointer;
+          color: #409eff;
+          margin-top: 8px;
+        }
+      }
     }
     .wrapper {
       background: #eef0f3;
