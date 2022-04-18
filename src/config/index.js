@@ -6,15 +6,15 @@ const env =
 const EnvConfig = {
     dev: {
         baseApi: '/api',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
+        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
     },
     test: {
         baseApi: '/',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
+        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
     },
     prod: {
         baseApi: '/',
-        mockApi: 'http://127.0.0.1:4523/mock/843894/api'
+        mockApi: 'https://www.fastmock.site/mock/cbd39120df890ebff136e63eedba4ce1/api'
     }
 }
 export default {

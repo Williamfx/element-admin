@@ -8,7 +8,7 @@
       </div>
       <!-- 导航菜单 -->
       <el-menu
-        default-active="2"
+        :default-active="activeMenu"
         background-color="#001529"
         text-color="#fff"
         router
@@ -21,12 +21,16 @@
     <div :class="['content-right',isCollapse?'fold':'unfold']">
       <div class="nat-top">
         <div class="nav-left">
-          <div class="menu-fold" @click="toggle"><i class="iconfont">&#xe669;</i></div>    
-          <div class="bread">面包屑</div>
+          <div class="menu-fold" @click="toggle">
+            <i class="el-icon-s-fold" :size="20"></i>
+            </div>
+          <div class="bread">
+            <BreadCrumb />
+          </div>
         </div>
         <div class="user-info">
-          <el-badge :is-dot="noticeCount" class="notice">
-              <i class="iconfont">&#xe60d;</i>
+          <el-badge :is-dot="noticeCount>0?true:false" class="notice">
+              <i class="el-icon-bell"></i>
           </el-badge>
           <el-dropdown @command="handleLogout">
             <el-button class="userlink">
@@ -54,15 +58,17 @@
 
 <script>
 import TreeMenu from './TreeMenu.vue'
+import BreadCrumb from './BreadCrumb.vue'
 export default {
   name:'Home',
-  components: {TreeMenu},
+  components: {TreeMenu,BreadCrumb},
   data() {
     return {
       isCollapse: false,
       userInfo: this.$store.state.userInfo,
       noticeCount: 0,
-      userMenu: []
+      userMenu: [],
+      activeMenu: location.hash.slice(1)
     }
   },
   mounted() {
@@ -91,31 +97,18 @@ export default {
       try {
         const list = await this.$api.getMenuList()
         this.userMenu = list;
-        console.log(list)
       }catch(error){
         console.error(error)
       }
     }
   }
 }
+
 </script>
 
 <style lang="scss">
-@font-face {
-  font-family: 'iconfont';  /* Project id 3330445 */
-  src: url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.woff2?t=1650003668721') format('woff2'),
-       url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.woff?t=1650003668721') format('woff'),
-       url('//at.alicdn.com/t/font_3330445_w1l1lm502qj.ttf?t=1650003668721') format('truetype');
-}
-.iconfont{
-    font-family:"iconfont" !important;
-    font-size:18px;
-    font-style:normal;
-    -webkit-font-smoothing: antialiased;
-    -webkit-text-stroke-width: 0.2px;
-    -moz-osx-font-smoothing: grayscale;
-    margin-right: 10px;
-}
+
+@import url("//unpkg.com/element-ui@2.15.8/lib/theme-chalk/index.css");
 .el-menu {
   .el-sub-menu__title {
     font-size: 18px;

@@ -10,14 +10,33 @@ const routes = [{
         component: Home,
         redirect: '/welcome',
         children: [{
-            name: 'welcome',
-            meta: {
-                title: '欢迎页',
+                name: 'welcome',
+                meta: {
+                    title: '欢迎页',
+                },
+                path: '/welcome',
+                component: () =>
+                    import ('./../views/Welcome.vue')
             },
-            path: '/welcome',
-            component: () =>
-                import ('./../views/Welcome.vue')
-        }]
+            {
+                name: 'user',
+                meta: {
+                    title: '用户管理',
+                },
+                path: 'user',
+                component: () =>
+                    import ('./../views/Welcome.vue'),
+                children: [{
+                    name: 'info',
+                    path: 'info',
+                    meta: {
+                        title: '信息统计'
+                    },
+                    component: () =>
+                        import ('./../views/Welcome.vue')
+                }]
+            }
+        ]
     },
     {
         name: 'login',
