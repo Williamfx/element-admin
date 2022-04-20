@@ -20,21 +20,12 @@ const routes = [{
             },
             {
                 name: 'user',
+                path: 'user',
                 meta: {
                     title: '用户管理',
                 },
-                path: 'user',
                 component: () =>
-                    import ('@/views/Welcome.vue'),
-                children: [{
-                    name: 'info',
-                    path: 'info',
-                    meta: {
-                        title: '信息统计'
-                    },
-                    component: () =>
-                        import ('@/views/Welcome.vue')
-                }]
+                    import ('@/views/User.vue')
             }
         ]
     },
