@@ -1,14 +1,14 @@
 <template>
     <div class="user-manage">
         <div class="query-form">
-            <el-form :inline="true" :model="user">
-                <el-form-item>
+            <el-form ref="form" :inline="true" :model="user">
+                <el-form-item label="用户ID" prop="userId"> <!-- prop的作用  1、底层获取表单对象字段  2、表单必填项验证 -->
                     <el-input v-model="user.userId" placeholder="请输入用户ID" />
                 </el-form-item>
-                <el-form-item>
+                <el-form-item label="用户名称" prop="userName">
                     <el-input v-model="user.userName" placeholder="请输入用户名称" />
                 </el-form-item>
-                <el-form-item>
+                <el-form-item label="状态" prop="state">
                     <el-select v-model="user.state">
                         <el-option :value="0" label="所有"></el-option>
                         <el-option :value="1" label="在职"></el-option>
@@ -17,8 +17,8 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">查询</el-button>
-                    <el-button>重置</el-button>
+                    <el-button type="primary" @click="handleQuery">查询</el-button>
+                    <el-button @click="handleReset">重置</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -43,6 +43,12 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination
+                class="pagination"
+                background layout="prev, pager, next"
+                :total="pager.total"
+                @current-change="handleCurrentChange"
+            />
         </div>
     </div>
 </template>
@@ -52,9 +58,19 @@ import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 export default {
     name: 'user',
     setup() {
-        const { ctx } = getCurrentInstance
-        const user = reactive({});
+        // 获取composition API 上下文对象
+        const { proxy } = getCurrentInstance();
+        // 初始化用户表单对象
+        const user = reactive({
+            state: 0
+        });
+        // 初始化用户列表数据
         const userList = ref([]);
+        // 初始化分页对象
+        const pager = reactive({
+            pageNum: 1,
+            pageSize: 10,
+        })
         const columns = reactive([
             {
                 label: '用户ID',
@@ -86,22 +102,46 @@ export default {
             }
         ])
         onMounted(()=>{
-            console.log('init...')
+            getUserList()
         })
-        const getUserList = () => {
-            ctx.$request
+        // 获取用户列表
+        const getUserList =async () => {
+            let params = { ...user, ...pager };
+            try{
+                const { list,page } = await proxy.$api.getUserList(params)
+                userList.value = list;
+                pager.total = page.total;
+            } catch (error) {
+                
+            }
+        }
+        // 查询事件，获取用户列表
+        const handleQuery = ()=>{
+            getUserList();
+        }
+        // 重置查询表单
+        const handleReset = ()=>{
+            proxy.$refs.form.resetFields();
+        }
+        //分页事件处理
+        const handleCurrentChange = (current)=>{
+            pager.pageNum = current;
+            getUserList();
         }
         return {
             user,
             userList,
             columns,
-            getUserList
+            pager,
+            getUserList,
+            handleQuery,
+            handleReset,
+            handleCurrentChange,
         }
     }
 }
 </script>
 
 <style lang="scss">
-
 
 </style>
