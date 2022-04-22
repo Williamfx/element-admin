@@ -25,21 +25,23 @@
         <div class="base-table">
             <div class="action">
                 <el-button type="primary">新增</el-button>
-                <el-button type="danger">批量删除</el-button>
+                <el-button type="danger" @click="handlePatchDel">批量删除</el-button>
             </div>
-            <el-table :data="userList">
+            <el-table :data="userList" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="55"/>
                 <el-table-column
                     v-for="item in columns"
                     :key="item.prop"
                     :prop="item.prop"
                     :label="item.label"
-                    :width="item.width">
+                    :width="item.width"
+                    :formatter="item.formatter"
+                    >
                 </el-table-column>
                 <el-table-column label="操作" width="130">
                     <template #default="scope">
                         <el-button @click="handleClick(scope.row)" size="small">编辑</el-button>
-                        <el-button type="danger" size="small">删除</el-button>
+                        <el-button type="danger" size="small" @click="handleDel(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -50,6 +52,25 @@
                 @current-change="handleCurrentChange"
             />
         </div>
+        <el-dialog>
+            <el-form :model="userForm">
+                <el-form-item label="用户名" prop="userName">
+                    <el-input v-model="userForm.userName" placeholder="请输入用户名称"/>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="userEmail">
+                    <el-input v-model="userForm.userEmail" placeholder="请输入用户邮箱"/>
+                </el-form-item>
+                <el-form-item label="手机号" prop="userEmail">
+                    <el-input v-model="userForm.userName" placeholder="请输入手机号"/>
+                </el-form-item>
+                <el-form-item label="岗位" prop="userEmail">
+                    <el-input v-model="userForm.userName" placeholder="请输入岗位"/>
+                </el-form-item>
+                <el-form-item label="邮箱" prop="userEmail">
+                    <el-input v-model="userForm.userName" placeholder="请输入用户邮箱"/>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 
@@ -71,6 +92,8 @@ export default {
             pageNum: 1,
             pageSize: 10,
         })
+        // 选中用户列表的对象
+        const checkedUserIds = ref([]);
         const columns = reactive([
             {
                 label: '用户ID',
@@ -86,11 +109,26 @@ export default {
             },
             {
                 label: '用户角色',
-                prop: 'role'
+                prop: 'role',
+                formatter(row,column,value){
+                    // console.log(row,column,value)
+                    return {
+                        0: '管理员',
+                        1: '普通用户'
+                    }[value]
+                }
             },
             {
                 label: '用户状态',
-                prop: 'state'
+                prop: 'state',
+                formatter(row,column,value){
+                    // console.log(row,column,value)
+                    return {
+                        1: '在职',
+                        2: '离职',
+                        3: '试用期',
+                    }[value]
+                }
             },
             {
                 label: '注册时间',
@@ -128,15 +166,52 @@ export default {
             pager.pageNum = current;
             getUserList();
         }
+        // 用户单个删除
+        const handleDel =async (row) =>{
+            await proxy.$api.userDel({
+                userIds: [row.userId]  //可单个删除，可批量删除
+            })
+            proxy.$message.success('删除成功')
+            getUserList();
+        }
+        // 用户批量删除
+        const handlePatchDel =async ()=>{
+            if(checkedUserIds.value.length == 0) {
+                proxy.$message.error('请选择要删除的用户')
+                return
+            }
+            const res = await proxy.$api.userDel({
+                userIds: checkedUserIds.value  //可单个删除，可批量删除
+            })
+            if(res.nModified>0){
+                proxy.$message.success('删除成功')
+                getUserList();
+            } else {
+                proxy.$message.success('修改失败')
+            }
+        }
+        //  表格多选
+        const handleSelectionChange = (list)=>{
+            console.log('>',list)
+            let arr = [];
+            list.map(item=>{
+                arr.push(item.userId)
+            })
+            checkedUserIds.value = list
+        }
         return {
             user,
             userList,
             columns,
             pager,
+            checkedUserIds,
             getUserList,
             handleQuery,
             handleReset,
             handleCurrentChange,
+            handleDel,
+            handlePatchDel,
+            handleSelectionChange
         }
     }
 }
