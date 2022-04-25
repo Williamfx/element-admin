@@ -9,6 +9,7 @@ export default {
             url: '/users/login',
             method: 'post',
             data: params,
+            // mock: true,
         })
     },
     noticeCount(params) {
@@ -32,7 +33,7 @@ export default {
             url: '/users/list',
             method: 'get',
             data: params,
-            mock: true,
+            mock: false,
         })
     },
     userDel(params) {
@@ -40,7 +41,7 @@ export default {
             url: '/users/delete',
             method: 'post',
             data: params,
-            mock: true,
+            mock: false,
         })
     },
     getRoleList() {
@@ -64,7 +65,7 @@ export default {
             url: '/users/operate',
             method: 'post',
             data: params,
-            mock: true,
+            mock: false,
         })
     }
 }

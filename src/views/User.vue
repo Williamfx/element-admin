@@ -96,6 +96,7 @@
 
 <script>
 import { getCurrentInstance, onMounted, reactive, ref, toRaw } from 'vue'
+import utils from './../utils/utils'
 export default {
     name: 'user',
     setup() {
@@ -103,7 +104,7 @@ export default {
         const { proxy } = getCurrentInstance();
         // 初始化用户表单对象
         const user = reactive({
-            state: 0
+            state: 1
         });
         // 初始化用户列表数据
         const userList = ref([]);
@@ -149,7 +150,7 @@ export default {
             ],
             mobile: [
                 {
-                    pattern: /1\d{10}/,
+                    pattern: /1[3-9]\d{9}/,
                     message: '请输入正确的手机号格式',
                     trigger: 'blur'
                 }
@@ -193,11 +194,17 @@ export default {
             },
             {
                 label: '注册时间',
-                prop: 'createTime'
+                prop: 'createTime',
+                formatter: (row,column,value)=>{
+                    return utils.formateDate(new Date(value))
+                }
             },
             {
                 label: '最后登录时间',
-                prop: 'lastLoginTime'
+                prop: 'lastLoginTime',
+                formatter: (row,column,value)=>{
+                    return utils.formateDate(new Date(value))
+                }
             }
         ])
         
@@ -297,12 +304,10 @@ export default {
                     params.userEmail += "@imooc.com";
                     params.action = action.value
                     let res = await proxy.$api.userSubmit(params);
-                    if(res) {
-                        showModal.value = false;
-                        proxy.$message.success('用户创建成功')
-                        handleReset('dialogForm');
-                        getUserList();
-                    }
+                    showModal.value = false;
+                    proxy.$message.success('用户创建成功')
+                    handleReset('dialogForm');
+                    getUserList();
                 }
             })
         }
