@@ -192,6 +192,7 @@ export default {
       ],
       showModal: false,
       menuForm: {
+        parentId: [null],
         menuType: 1,
         menuState: 1,
       },
