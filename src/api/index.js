@@ -57,7 +57,7 @@ export default {
             url: '/roles/List',
             method: 'get',
             data: {},
-            mock: true,
+            mock: false,
         })
     },
     getDeptList() {
@@ -83,5 +83,13 @@ export default {
             data: params,
             mock: false,
         })
-    }
+    },
+    roleOperate(params) {
+        return request({
+            url: '/roles/operate',
+            method: 'post',
+            data: params,
+            mock: false,
+        })
+    },
 }

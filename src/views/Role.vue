@@ -156,20 +156,32 @@ export default {
       this.action = "create";
       this.showModal = true;
     },
+    handleEdit() {
+      this.showModal = true;
+      this.action = "edit";
+      this.$nextTick(() => {
+        Object.assign(this.roleForm);
+      });
+    },
     async handleDel(_id) {
-      await this.$api.menuSubmit({_id,action:'delete'});
+      await this.$api.roleOperate({_id,action:'delete'});
       this.$message.success('删除成功')
-      this.getMenuList();
+      this.getRoleList();
     },
     handleClose() {
       this.handleReset("dialogForm")
       this.showModal = false;
     },
     handleSubmit() {
-      this.$refs.dialogForm.validate((valid)=>{
+      this.$refs.dialogForm.validate(async (valid)=>{
         if(valid) {
-          // let params = {this.roleForm};
-          this.$api.roleOperate(params);
+          let { action, menuForm } = this;
+          let params = { ...menuForm, action };
+          let res = await this.$api.roleOperate(params);
+          this.showModal = false;
+          this.$message.success("操作成功");
+          this.handleReset("dialogForm");
+          this.getRoleList();
         }
       })
     }
