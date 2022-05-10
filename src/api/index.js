@@ -49,7 +49,7 @@ export default {
             url: '/roles/allList',
             method: 'get',
             data: {},
-            mock: true,
+            mock: false,
         })
     },
     getRoleList() {
@@ -57,7 +57,7 @@ export default {
             url: '/roles/List',
             method: 'get',
             data: {},
-            mock: false,
+            mock: true,
         })
     },
     getDeptList() {
